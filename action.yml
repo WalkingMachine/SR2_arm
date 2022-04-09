@@ -1,0 +1,5 @@
+name: 'alpha-tts'
+description: 'Run the tts program'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
