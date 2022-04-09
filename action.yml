@@ -1,5 +1,5 @@
-name: 'alpha-tts'
-description: 'Run the tts program'
+name: 'rs2-arm'
+description: 'Run the arm program'
 runs:
   using: 'docker'
   image: 'Dockerfile'
