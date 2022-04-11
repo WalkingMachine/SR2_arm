@@ -1,11 +1,12 @@
 from setuptools import setup
 
 package_name = 'sr2_arm'
+robotiq_85 = 'sr2_arm/robotiq_85'
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name],
+    packages=[package_name, robotiq_85],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
