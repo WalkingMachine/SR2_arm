@@ -1,3 +1,4 @@
+from math import floor
 from time import sleep
 import rclpy
 from rclpy.action import ActionServer
@@ -5,6 +6,8 @@ from rclpy.node import Node
 from sr2_interfaces.action import Gripper
 from sr2_interfaces.msg import Heartbeat
 from .robotiq_85.robotiq_85_gripper import Robotiq85Gripper
+
+from threading import Thread
 
 
 class GripperActionServer(Node):
@@ -18,17 +21,15 @@ class GripperActionServer(Node):
 
     def __init__(self):
         super().__init__('gripper_action_server')
-        self.gripper = Robotiq85Gripper()
+        self.gripper = Robotiq85Gripper(comport="/dev/gripper")
         if not self.gripper.init_success:
             self.get_logger().error("Gripper not found")
             return
 
+        print(self.gripper.is_ready())
         # initialization of gripper
-        self.gripper.process_stat_cmd()
-        for _ in range(100):
-            self.gripper.process_act_cmd()
-            self.gripper.process_stat_cmd()
-            sleep(0.01)
+        self.gripper.process_act_cmd(0)
+        self.gripper.process_stat_cmd(0)
         
         self._action_server = ActionServer(
             self,
@@ -58,27 +59,28 @@ class GripperActionServer(Node):
         vel = self._clip_values(goal_handle.request.vel, self._VEL_MIN, self._VEL_MAX)
         force = self._clip_values(goal_handle.request.force, self._FORCE_MIN, self._FORCE_MAX)
 
-        self.gripper.goto(dev=0, pos=pos, vel=vel, force=force)
-
-        while self.gripper.get_pos() != self.gripper.get_req_pos():
+        self.gripper.goto(pos=pos, vel=vel, force=force)
+        self.gripper.process_act_cmd(0)
+        self.gripper.process_stat_cmd(0)
+        while round(floor(self.gripper.get_pos()*pow(10, 3)) / pow(10, 3), 3) \
+            != round(floor(self.gripper.get_req_pos()*pow(10, 3)) / pow(10, 3), 3):
             if not self.open_:
                 return Gripper.Result()
-            self.gripper.process_act_cmd()
-            self.gripper.process_stat_cmd()
+            self.gripper.process_act_cmd(0)
+            self.gripper.process_stat_cmd(0)
+        
             feedback_msg = Gripper.Feedback()
             feedback_msg.cur_pos = self.gripper.get_pos()
             feedback_msg.obj_detected = self.gripper.object_detected()
             goal_handle.publish_feedback(feedback_msg)
             if feedback_msg.obj_detected:
                 break
-            sleep(0.01)
 
         goal_handle.succeed()
         result = Gripper.Result()
         result.final_pos = self.gripper.get_pos()
         result.obj_detected = self.gripper.object_detected()
         return result
-
 
     def teleop_heartbeat_callback(self, msg):
         self.teleop_heartbeat_timer.reset()
