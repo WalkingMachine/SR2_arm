@@ -25,7 +25,7 @@ class GripperActionServer(Node):
 
         # initialization of gripper
         self.gripper.process_stat_cmd()
-        for _ in range(10):
+        for _ in range(100):
             self.gripper.process_act_cmd()
             self.gripper.process_stat_cmd()
             sleep(0.01)
@@ -61,18 +61,19 @@ class GripperActionServer(Node):
         self.gripper.goto(dev=0, pos=pos, vel=vel, force=force)
 
         while self.gripper.get_pos() != self.gripper.get_req_pos():
-            feedback_msg = Gripper.Feedback()
-            feedback_msg.cur_pos = self.gripper.get_pos()
-
+            if not self.open_:
+                return Gripper.Result()
             self.gripper.process_act_cmd()
             self.gripper.process_stat_cmd()
-            if self.gripper.object_detected():
-                feedback_msg.obj_detected = True
+            feedback_msg = Gripper.Feedback()
+            feedback_msg.cur_pos = self.gripper.get_pos()
+            feedback_msg.obj_detected = self.gripper.object_detected()
+            goal_handle.publish_feedback(feedback_msg)
+            if feedback_msg.obj_detected:
                 break
             sleep(0.01)
 
         goal_handle.succeed()
-
         result = Gripper.Result()
         result.final_pos = self.gripper.get_pos()
         result.obj_detected = self.gripper.object_detected()
@@ -85,15 +86,16 @@ class GripperActionServer(Node):
 
     
     def teleop_heartbeat_timer_callback(self):
-        ...
+        self.open_ = False
+        self.get_logger().error("No connection to Teleop...")
 
 def main(args=None):
     rclpy.init(args=args)
     
     node = GripperActionServer()
 
-    # if node.gripper.init_success:
-    rclpy.spin(node)
+    if node.gripper.init_success:
+        rclpy.spin(node)
 
     node.destroy_node()
 
