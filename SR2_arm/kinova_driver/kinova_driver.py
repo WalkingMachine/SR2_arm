@@ -1,8 +1,7 @@
 from ctypes import *
-from ntpath import join
-import os
 import logging
-from typing import List, Tuple
+import os
+from typing import List
 
 from kinovaCommInterface import KinovaDevice
 
@@ -20,9 +19,9 @@ class KinovaDriver:
     _MAX_SPEED = 40.0
 
     def __init__(self) -> None:
-        # if os.geteuid() != 0:
-        #     self._logger.error("You need to have root privileges to run this script.\nPlease try again, this time using 'sudo'.")
-        #     return
+        if os.geteuid() != 0:
+            self._logger.error("You need to have root privileges to run this script.\nPlease try again, this time using 'sudo'.")
+            return
 
         self._initialized = False
 
