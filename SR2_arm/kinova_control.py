@@ -19,11 +19,14 @@ class Kinova_Control(Node):
 
         self.driver.initialize()
 
-        self.mutex_lock = Lock()
+        # heartbeat check
+
+        # Flow control
+        self.open_ = True
 
 
     def joint_change_callback(self, msg):
-        with self.mutex_lock:
+        if self.open_:
             if msg.data:
                 self.driver.joint_up()
                 self.get_logger().info(f"Joint changed (+), joint is now {self.driver.joint_index}")
@@ -33,8 +36,10 @@ class Kinova_Control(Node):
 
 
     def joint_move_callback(self, msg):
-        with self.mutex_lock:
+        if self.open_:
             self.driver.send_cmd_val(msg.linear.x)
+        else:
+            self.driver.send_estop()
 
 
     def close(self):
