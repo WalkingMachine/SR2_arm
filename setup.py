@@ -21,8 +21,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "start_server = sr2_arm.arm_service:main",
-            "say = sr2_arm.arm_client:main",
+            "start_gripper_server = sr2_arm.gripper_action_server:main",
+            "gripper_client = sr2_arm.gripper_action_client:main"
         ],
     },
 )
