@@ -1,12 +1,13 @@
 from setuptools import setup
 
 package_name = 'sr2_arm'
-robotiq_85 = 'sr2_arm/robotiq_85'
+robotiq_pkg = 'sr2_arm/robotiq_85'
+kinova_pkg = 'sr2_arm/kinova' 
 
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name, robotiq_85],
+    packages=[package_name, robotiq_pkg, kinova_pkg],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
@@ -23,6 +24,7 @@ setup(
         'console_scripts': [
             "start_server = sr2_arm.arm_service:main",
             "say = sr2_arm.arm_client:main",
+            "start_kinova = sr2_arm.kinova_control:main"
         ],
     },
 )

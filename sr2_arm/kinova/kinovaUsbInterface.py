@@ -1,10 +1,11 @@
 from ctypes import POINTER, CDLL, byref, c_int
 from typing import List
+import os
 
-from kinovaCommInterface import MAX_KINOVA_DEVICE, KinovaDevice
-from kinova_types import AngularInfo, AngularPosition, CartesianPosition, SensorsInfo, TrajectoryFIFO, TrajectoryPoint
+from .kinovaCommInterface import MAX_KINOVA_DEVICE, KinovaDevice
+from .kinova_types import AngularInfo, AngularPosition, CartesianPosition, SensorsInfo, TrajectoryFIFO, TrajectoryPoint
 
-_usb_lib = CDLL("./Kinova.API.USBCommandLayerUbuntu.so")
+_usb_lib = CDLL("/home/wakling1/SARA_ROS2/src/SR2_arm/sr2_arm/kinova/Kinova.API.USBCommandLayerUbuntu.so")
 
 # region Error Codes
 """ERROR CODES"""

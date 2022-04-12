@@ -2,15 +2,9 @@ from ctypes import *
 import logging
 import os
 from typing import List
-
-from kinovaCommInterface import KinovaDevice
-
-try:
-    from kinovaUsbInterface import InitAPI, CloseAPI, GetAngluarForce, GetAngularPosition, GetDevices, SendAdvanceTrajectory, GetSensorsInfo
-    from kinovaCommInterface import MAX_KINOVA_DEVICE, ERROR_NO_DEVICE_FOUND
-    from kinova_types import AngularPosition, TrajectoryPoint, SensorsInfo, UserPosition, POSITION_TYPE
-except Exception as e:
-    print("Shared libraries not found or error")
+from .kinovaUsbInterface import InitAPI, CloseAPI, GetAngluarForce, GetAngularPosition, GetDevices, SendAdvanceTrajectory, GetSensorsInfo
+from .kinovaCommInterface import MAX_KINOVA_DEVICE, ERROR_NO_DEVICE_FOUND, KinovaDevice
+from .kinova_types import AngularPosition, TrajectoryPoint, SensorsInfo, UserPosition, POSITION_TYPE
 
 
 class KinovaDriver:
