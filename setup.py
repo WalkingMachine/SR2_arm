@@ -23,6 +23,7 @@ setup(
         'console_scripts': [
             "start_server = sr2_arm.arm_service:main",
             "say = sr2_arm.arm_client:main",
+            "start_gripper_server = sr2_arm.gripper_action_server:main"
         ],
     },
 )
