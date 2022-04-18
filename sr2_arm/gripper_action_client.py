@@ -20,7 +20,8 @@ class GripperActionClient(Node):
 
         self._action_client.wait_for_server()
 
-        self._send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+        self._send_goal_future = self._action_client.send_goal_async(
+            goal_msg, feedback_callback=self.feedback_callback)
 
         self._send_goal_future.add_done_callback(self.goal_response_callback)
 
@@ -37,12 +38,15 @@ class GripperActionClient(Node):
 
     def get_result_callback(self, future):
         result = future.result().result
-        self.get_logger().info('Result: {0}, {1}'.format(result.final_pos, result.obj_detected))
+        self.get_logger().info('Result: {0}, {1}'.format(
+            result.final_pos, result.obj_detected))
         rclpy.shutdown()
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
-        self.get_logger().info('Received feedback: {0}, {1}'.format(feedback.cur_pos, feedback.obj_detected))
+        self.get_logger().info('Received feedback: {0}, {1}'.format(
+            feedback.cur_pos, feedback.obj_detected))
+
 
 def main(args=None):
 
@@ -57,6 +61,7 @@ def main(args=None):
     node.send_goal(float(args.pos))
 
     rclpy.spin(node)
+
 
 if __name__ == "__main__":
     main()

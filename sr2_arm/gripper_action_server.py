@@ -30,7 +30,7 @@ class GripperActionServer(Node):
         # initialization of gripper
         self.gripper.process_act_cmd(0)
         self.gripper.process_stat_cmd(0)
-        
+
         self._action_server = ActionServer(
             self,
             Gripper,
@@ -39,8 +39,10 @@ class GripperActionServer(Node):
         )
 
         # teleop heartbeat
-        self.teleop_heartbeat_sub = self.create_subscription(Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
-        self.teleop_heartbeat_timer = self.create_timer(1, self.teleop_heartbeat_timer_callback)
+        self.teleop_heartbeat_sub = self.create_subscription(
+            Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
+        self.teleop_heartbeat_timer = self.create_timer(
+            1, self.teleop_heartbeat_timer_callback)
 
         # flow control
         self.open_ = True
@@ -55,20 +57,23 @@ class GripperActionServer(Node):
 
     def execute_callback(self, goal_handle):
         self.get_logger().info("executing goal")
-        pos = self._clip_values(goal_handle.request.pos, self._POS_MIN, self._POS_MAX)
-        vel = self._clip_values(goal_handle.request.vel, self._VEL_MIN, self._VEL_MAX)
-        force = self._clip_values(goal_handle.request.force, self._FORCE_MIN, self._FORCE_MAX)
+        pos = self._clip_values(goal_handle.request.pos,
+                                self._POS_MIN, self._POS_MAX)
+        vel = self._clip_values(goal_handle.request.vel,
+                                self._VEL_MIN, self._VEL_MAX)
+        force = self._clip_values(
+            goal_handle.request.force, self._FORCE_MIN, self._FORCE_MAX)
 
         self.gripper.goto(pos=pos, vel=vel, force=force)
         self.gripper.process_act_cmd(0)
         self.gripper.process_stat_cmd(0)
         while round(floor(self.gripper.get_pos()*pow(10, 3)) / pow(10, 3), 3) \
-            != round(floor(self.gripper.get_req_pos()*pow(10, 3)) / pow(10, 3), 3):
+                != round(floor(self.gripper.get_req_pos()*pow(10, 3)) / pow(10, 3), 3):
             if not self.open_:
                 return Gripper.Result()
             self.gripper.process_act_cmd(0)
             self.gripper.process_stat_cmd(0)
-        
+
             feedback_msg = Gripper.Feedback()
             feedback_msg.cur_pos = self.gripper.get_pos()
             feedback_msg.obj_detected = self.gripper.object_detected()
@@ -86,14 +91,14 @@ class GripperActionServer(Node):
         self.teleop_heartbeat_timer.reset()
         self.open_ = True
 
-    
     def teleop_heartbeat_timer_callback(self):
         self.open_ = False
         self.get_logger().error("No connection to Teleop...")
 
+
 def main(args=None):
     rclpy.init(args=args)
-    
+
     node = GripperActionServer()
 
     if node.gripper.init_success:
@@ -106,4 +111,3 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
-    
