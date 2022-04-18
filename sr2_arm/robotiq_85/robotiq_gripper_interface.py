@@ -36,7 +36,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def shutdown(self) -> bool:
-        """Close all active connections
+        """
+        Close all active connections.
 
         :return: True if successful, else False
         """
@@ -44,15 +45,18 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def process_act_cmd(self, dev: int = 0) -> bool:
-        """Send act command to gripper
+        """
+        Send act command to gripper.
 
         :param dev: Index of device, default 0
-        :return:   True if response is valid else False"""
+        :return:   True if response is valid else False
+        """
         pass
 
     @abstractmethod
     def process_stat_cmd(self, dev: int = 0) -> bool:
-        """Send stat command to gripper
+        """
+        Send stat command to gripper.
 
         :param dev: Index of the device, defaults to 0
         :return: True if communication is a success, else False
@@ -61,7 +65,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def activate_gripper(self, dev: int = 0) -> bool:
-        """Activate the gripper
+        """
+        Activate the gripper.
 
         :param dev: Index of the device, defaults to 0
         :return: True if successful else False
@@ -70,7 +75,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def deactivate_gripper(self, dev: int = 0) -> bool:
-        """Deactivate Gripper
+        """
+        Deactivate Gripper.
 
         :param dev: Index of device, defaults to 0
         :return: True if successful else False
@@ -79,7 +85,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def activate_emergency_release(self, dev: int = 0, gripper_open: bool = True) -> bool:
-        """Emergency release, open gripper and lock
+        """
+        Emergency release, open gripper and lock.
 
         :param dev: Index of device, defaults to 0
         :param gripper_open: Emergency state is open, defaults to True
@@ -89,7 +96,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def deactivate_emergency_release(self, dev: int = 0) -> bool:
-        """Deactivate emergency release
+        """
+        Deactivate emergency release.
 
         :param dev: Index of device, defaults to 0
         :return: True if successful else False
@@ -98,7 +106,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def goto(self, dev: int = 0, pos: float = 0.0, vel: float = 0.1, force: float = 5.0) -> bool:
-        """Send position to Gripper
+        """
+        Send position to Gripper.
 
         :param dev: Index of device, defaults to 0
         :param pos: Wanted position, defaults to 0.0
@@ -110,7 +119,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def stop(self, dev: int = 0) -> bool:
-        """Stop last command
+        """
+        Stop last command.
 
         :param dev: Index of device, defaults to 0
         :return: True if successful else False
@@ -119,7 +129,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def is_ready(self, dev: int = 0) -> bool:
-        """If the last status of the gripper is ready
+        """
+        If the last status of the gripper is ready.
 
         :param dev: Index of device, defaults to 0
         :return: True if ready else False
@@ -128,7 +139,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def is_reset(self, dev: int = 0) -> bool:
-        """Determines if the gripper is in release mode (see faults for reason)
+        """
+        Determine if the gripper is in release mode (see faults for reason).
 
         :param dev: Index of device, defaults to 0
         :return: True if in reset mode else False
@@ -137,7 +149,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def is_moving(self, dev: int = 0) -> bool:
-        """Determines if the gripper is moving.
+        """
+        Determine if the gripper is moving.
 
         :param dev: Index of device, defaults to 0
         :return: True of moving else False
@@ -146,7 +159,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def object_detected(self, dev: int = 0) -> bool:
-        """Determines of there was an object detected when closing.
+        """
+        Determine of there was an object detected when closing.
 
         :param dev: Index of device, defaults to 0
         :return: True of object detected else false
@@ -155,7 +169,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def get_fault_status(self, dev: int = 0) -> int:
-        """If in reset, this will return the fault status.
+        """
+        If in reset, this will return the fault status.
 
         :param dev: Index of device, defaults to 0
         :return: 0 if no fault else a fault number
@@ -164,7 +179,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def get_pos(self, dev: int = 0) -> float:
-        """Get the current position of the gripper
+        """
+        Get the current position of the gripper.
 
         :param dev: Index of device, defaults to 0
         :return: The position of the gripper
@@ -173,7 +189,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def get_req_pos(self, dev: int = 0) -> float:
-        """Get the last requested position sent to the gripper.
+        """
+        Get the last requested position sent to the gripper.
 
         :param dev: Index of device, defaults to 0
         :return: Requested position of gripper
@@ -182,7 +199,8 @@ class RobotiqGripperInterface(ABC):
 
     @abstractmethod
     def get_current(self, dev: int = 0) -> float:
-        """Get the current sent to the gripper
+        """
+        Get the current sent to the gripper.
 
         :param dev: Index of device, defaults to 0
         :return: Current sent to the gripper

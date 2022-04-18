@@ -33,7 +33,8 @@ from sr2_arm.robotiq_85.robotiq_gripper_interface import RobotiqGripperInterface
 
 
 class RobotiqTestGripper(RobotiqGripperInterface):
-    """This is a test class that replicates a connection to the gripper
+    """
+    This is a test class that replicates a connection to the gripper.
 
     :param num_grippers: Number of grippers connected, defaults to 1
     """
@@ -46,8 +47,7 @@ class RobotiqTestGripper(RobotiqGripperInterface):
     _FORCE_MAX: float = 220.0
 
     def __init__(self, num_grippers: int = 1, *args) -> None:
-        """Constructor method
-        """
+        """Initialize the Test Gripper."""
         super().__init__()
         if os.geteuid() != 0:
             exit("You need to be ROOT to run this...")

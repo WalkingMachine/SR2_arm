@@ -1,13 +1,10 @@
 from math import floor
-from time import sleep
 import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 from sr2_interfaces.action import Gripper
 from sr2_interfaces.msg import Heartbeat
 from .robotiq_85.robotiq_85_gripper import Robotiq85Gripper
-
-from threading import Thread
 
 
 class GripperActionServer(Node):
