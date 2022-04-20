@@ -20,5 +20,5 @@ import pytest
 @pytest.mark.copyright
 @pytest.mark.linter
 def test_copyright():
-    rc = main(argv=['.', 'test'])
+    rc = main(argv=['/root/dev/src/sr2_arm'])
     assert rc == 0, 'Found errors'
