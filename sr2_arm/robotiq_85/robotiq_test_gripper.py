@@ -49,8 +49,6 @@ class RobotiqTestGripper(RobotiqGripperInterface):
     def __init__(self, num_grippers: int = 1, *args) -> None:
         """Initialize the Test Gripper."""
         super().__init__()
-        if os.geteuid() != 0:
-            exit("You need to be ROOT to run this...")
 
         self._grippers = []
         self._local_grippers = []

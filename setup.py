@@ -17,7 +17,7 @@ setup(
     maintainer='walking',
     maintainer_email='wmaking@ens.etsmtl.ca',
     description='TODO: Package description',
-    license='MIT',
+    license='mit',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

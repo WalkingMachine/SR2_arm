@@ -1,0 +1,20 @@
+SR2_ARM
+=======
+
+Packages
+--------
+
+.. toctree::
+   :maxdepth: 2
+
+   robotiq_85 <sr2_arm/robotiq_85>
+
+
+Modules
+-------
+
+.. toctree::
+   :maxdepth: 2
+
+   sr2_arm/gripper_action_client
+   sr2_arm/gripper_action_server

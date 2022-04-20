@@ -23,11 +23,13 @@ __license__ = "MIT"
 __version__ = "1.0"
 
 from abc import ABC, abstractmethod
-
+import os
 
 class RobotiqGripperInterface(ABC):
 
     def __init__(self):
+        if os.geteuid() != 0:
+            exit("You need to be ROOT to run this...")
         self._init_success = True
 
     @property

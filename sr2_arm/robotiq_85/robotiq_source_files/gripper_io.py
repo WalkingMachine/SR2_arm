@@ -51,6 +51,8 @@ __copyright__ = "Copyright (C) 2015 Stanley Innovation Inc."
 
 import array
 
+import numpy as np
+
 from .modbus_crc import compute_modbus_rtu_crc, verify_modbus_rtu_crc
 
 ACTION_REQ_IDX = 7
