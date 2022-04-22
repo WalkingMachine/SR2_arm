@@ -1,9 +1,9 @@
-.. SR2_ARM documentation master file, created by
-   sphinx-quickstart on Wed Apr 20 00:59:51 2022.
+.. SR2_arm documentation master file, created by
+   sphinx-quickstart on Fri Apr 22 00:52:46 2022.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to SR2_ARM's documentation!
+Welcome to SR2_arm's documentation!
 ===================================
 
 .. toctree::
@@ -11,7 +11,6 @@ Welcome to SR2_ARM's documentation!
    :caption: Contents:
 
    sr2_arm <sr2_arm/sr2_arm>
-
 
 
 Indices and tables

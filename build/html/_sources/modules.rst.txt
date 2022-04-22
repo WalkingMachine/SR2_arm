@@ -1,7 +1,0 @@
-sr2_arm
-=======
-
-.. toctree::
-   :maxdepth: 4
-
-   sr2_arm
