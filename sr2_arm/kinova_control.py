@@ -1,31 +1,33 @@
 import rclpy
 from rclpy.node import Node
-from .kinova.kinova_driver import KinovaDriver
-from sr2_interfaces.msg import JointChange, Heartbeat
+from sr2_arm.kinova.kinova_driver import KinovaDriver
+from sr2_interfaces.msg import JointChange, Heartbeat, MoveJoint
 
 class Kinova_Control(Node):
+
+    MAX_SPEED = KinovaDriver.MAX_SPEED
 
     def __init__(self):
         super().__init__('kinova_control')
 
         # subscriber to change selected joint
-        self.joint_sub = self.create_subscription(JointChange, "sara/arm/kinova/joint_change", self.joint_change_callback, 10)
+        self.joint_sub = self.create_subscription(JointChange, "sr2/arm/kinova/joint_change", self.joint_change_callback, 10)
 
         # subscriber to move a joint
-        # self.move_sub = self.create_subscription(Twist, "sara/arm/kinova/joint-move", self.joint_move_callback, 10)
+        self.move_sub = self.create_subscription(MoveJoint, "sr2/arm/kinova/joint_move", self.joint_move_callback, 10)
 
         self.driver = KinovaDriver()
 
         self.driver.initialize()
 
         # heartbeat check from teleop
-        self.heartbeat_sub = self.create_subscription(Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
+        self.heartbeat_sub = self.create_subscription(Heartbeat, "sr2/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
         self.heartbeat_timer = self.create_timer(1, self.teleop_heartbeat_timer_callback)
 
         # Flow control
         self.open_ = True
 
-    def teleop_heartbeat_callback(self, msg):
+    def teleop_heartbeat_callback(self, msg: Heartbeat):
         self.heartbeat_timer.reset()
         self.open_ = True
 
@@ -34,7 +36,7 @@ class Kinova_Control(Node):
         self.driver.send_estop()
         self.get_logger().error("No connection to Teleop...")
 
-    def joint_change_callback(self, msg):
+    def joint_change_callback(self, msg: JointChange):
         if self.open_:
             if msg.SET:
                 if 0 <= msg.set_index <= 4:
@@ -49,9 +51,9 @@ class Kinova_Control(Node):
                 self.get_logger().info(f"Joint changed (-), joint is now {self.driver.joint_index}")
 
 
-    def joint_move_callback(self, msg):
+    def joint_move_callback(self, msg: MoveJoint):
         if self.open_:
-            self.driver.send_cmd_val(msg.linear.x)
+            self.driver.send_cmd_val(msg.direction * msg.speed)
         else:
             self.driver.send_estop()
 

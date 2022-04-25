@@ -10,7 +10,7 @@ from .kinova_types import AngularPosition, TrajectoryPoint, SensorsInfo, UserPos
 class KinovaDriver:
     _logger = logging.getLogger("KinovaDriver")
 
-    _MAX_SPEED = 40.0
+    MAX_SPEED = 40.0
 
     def __init__(self) -> None:
         if os.geteuid() != 0:
