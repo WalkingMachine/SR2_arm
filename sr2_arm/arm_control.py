@@ -31,11 +31,14 @@ class ArmController(Node):
             self._kinova_joint_pub.publish(joint_msg)
         if msg.kinova_move:
             move_msg = MoveJoint()
-            move_msg.speed = msg.direction * msg.speed
-            self._kinova_move_pub(move_msg)
+            move_msg.speed = msg.direction * msg.speed * 40.0
+            self._kinova_move_pub.publish(move_msg)
+        else:
+            self._kinova_move_pub.publish(MoveJoint())
+
         if msg.gripper:
             self._gripper_client.send_goal(0.085 if msg.state else 0.0)
-            rclpy.spin(self._gripper_client)
+            rclpy.spin_once(self._gripper_client)
 
 
 def main(args=None):

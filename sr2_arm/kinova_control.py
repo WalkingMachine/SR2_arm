@@ -2,10 +2,11 @@ import rclpy
 from rclpy.node import Node
 from sr2_arm.kinova.kinova_driver import KinovaDriver
 from sr2_interfaces.msg import JointChange, Heartbeat, MoveJoint
+from threading import Thread
+from functools import partial
+from time import sleep
 
 class Kinova_Control(Node):
-
-    MAX_SPEED = KinovaDriver.MAX_SPEED
 
     def __init__(self):
         super().__init__('kinova_control')
@@ -26,6 +27,7 @@ class Kinova_Control(Node):
 
         # Flow control
         self.open_ = True
+        self._worker_thread = None
 
     def teleop_heartbeat_callback(self, msg: Heartbeat):
         self.heartbeat_timer.reset()
@@ -53,9 +55,17 @@ class Kinova_Control(Node):
 
     def joint_move_callback(self, msg: MoveJoint):
         if self.open_:
-            self.driver.send_cmd_val(float(msg.speed))
+            self.speed = float(msg.speed)
+            if self._worker_thread is None or not self._worker_thread.is_alive():
+                self._worker_thread = Thread(target=self._send_move_thread)
+                self._worker_thread.start()
         else:
             self.driver.send_estop()
+
+    def _send_move_thread(self):
+        while self.open_ and self.speed != 0.0:
+            self.get_logger().info(str(self.speed))
+            self.driver.send_cmd_val(self.speed)
 
 
     def close(self):

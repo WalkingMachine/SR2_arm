@@ -76,7 +76,7 @@ class GripperActionClient(Node):
         result = future.result().result
         self.get_logger().info('Result: {0}, {1}'.format(
             result.final_pos, result.obj_detected))
-        rclpy.shutdown()
+        # rclpy.shutdown()
 
     def feedback_callback(self, feedback_msg) -> None:
         """

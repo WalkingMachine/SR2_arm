@@ -51,7 +51,7 @@ class GripperActionServer(Node):
         if test_mode:
             self.gripper = RobotiqTestGripper()
         else:
-            self.gripper = Robotiq85Gripper(comport="/dev/gripper")
+            self.gripper = Robotiq85Gripper()
         if not self.gripper.init_success:
             self.get_logger().error("Gripper not found")
             return
@@ -70,7 +70,7 @@ class GripperActionServer(Node):
         if not test_mode:
             # teleop heartbeat
             self.teleop_heartbeat_sub = self.create_subscription(
-                Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
+                Heartbeat, "sr2/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
             self.teleop_heartbeat_timer = self.create_timer(
                 1, self.teleop_heartbeat_timer_callback)
 
@@ -114,7 +114,7 @@ class GripperActionServer(Node):
         result.obj_detected = self.gripper.object_detected()
         return result
 
-    def teleop_heartbeat_callback(self) -> None:
+    def teleop_heartbeat_callback(self, msg) -> None:
         """
         Handle heartbeat callback.
 
@@ -147,12 +147,12 @@ def main(args=None):
 
     :param args: rclpy arguments, defaults to None
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--test", action="store_true")
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--test", action="store_true")
 
     rclpy.init(args=args)
-    args = parser.parse_args()
-    node = GripperActionServer(True if args.test else False)
+    # args = parser.parse_args()
+    node = GripperActionServer()
 
     if node.gripper.init_success:
         rclpy.spin(node)

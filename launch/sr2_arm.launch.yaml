@@ -1,0 +1,19 @@
+
+launch:
+
+
+- node:
+    pkg: "sr2_arm"
+    exec: "start_gripper_server"
+    name: "gripper_server"
+
+- node:
+    pkg: "sr2_arm"
+    exec: "start_kinova"
+    name: "kinova"
+
+- node:
+    pkg: "sr2_arm"
+    exec: "start_arm_control"
+    name: "arm_control"
+
