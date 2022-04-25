@@ -1,21 +1,4 @@
-# Copyright (c) 2022 Walking Machine
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""Robotiq 85 gripper Mock hardware driver."""
 
 __author__ = "WalkingMachine"
 __copyright__ = "Copyright (C) 2022 Walking Machine"
@@ -23,7 +6,6 @@ __license__ = "MIT"
 __version__ = "1.0"
 
 
-import os
 from dataclasses import dataclass
 from threading import Thread, Lock
 from time import sleep
@@ -46,8 +28,7 @@ class RobotiqTestGripper(RobotiqGripperInterface):
     _FORCE_MIN: float = 5.0
     _FORCE_MAX: float = 220.0
 
-    def __init__(self, num_grippers: int = 1, *args) -> None:
-        """Initialize the Test Gripper."""
+    def __init__(self, *args, num_grippers: int = 1) -> None:  # pylint: disable=unused-argument
         super().__init__()
 
         self._grippers = []
@@ -64,9 +45,8 @@ class RobotiqTestGripper(RobotiqGripperInterface):
         self._emergency_release = False
         self._mutex = Lock()
 
-    def shutdown(self) -> bool:
+    def shutdown(self) -> None:
         self._is_connected = False
-        return True
 
     def process_act_cmd(self, dev: int = 0) -> bool:
         return self._is_connected
@@ -120,9 +100,9 @@ class RobotiqTestGripper(RobotiqGripperInterface):
             self._local_grippers[dev].is_active = False
             return True
 
-    def activate_emergency_release(self, dev: int = 0, gripper_open: bool = True) -> bool:
+    def activate_emergency_release(self, dev: int = 0, open_gripper: bool = True) -> bool:
         with self._mutex:
-            self._local_grippers[dev].req_pos = self._POS_MAX if gripper_open else self._POS_MIN
+            self._local_grippers[dev].req_pos = self._POS_MAX if open_gripper else self._POS_MIN
             self._local_grippers[dev].emergency_release = True
             return True
 
@@ -184,6 +164,11 @@ class RobotiqTestGripper(RobotiqGripperInterface):
 
 @dataclass
 class TestGripperIO:
+    """
+    Mock IO interface for test gripper.
+
+    :param index: index of the gripper
+    """
     index: int
     pos: float = 0.0
     req_pos: float = 0.0

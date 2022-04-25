@@ -24,7 +24,8 @@ __version__ = "1.0"
 
 import serial
 
-from sr2_arm.robotiq_85.robotiq_source_files import GripperIO, verify_modbus_rtu_crc
+from sr2_arm.robotiq_85.robotiq_source_files.gripper_io import GripperIO
+from sr2_arm.robotiq_85.robotiq_source_files.modbus_crc import verify_modbus_rtu_crc
 from sr2_arm.robotiq_85.robotiq_gripper_interface import RobotiqGripperInterface
 
 
@@ -45,10 +46,9 @@ class Robotiq85Gripper(RobotiqGripperInterface):
         self._init_success = True
         self._shutdown_driver = False
 
-    def shutdown(self) -> bool:
+    def shutdown(self):
         self._shutdown_driver = True
         self.ser.close()
-        return True
 
     def process_act_cmd(self, dev=0) -> bool:
         if (dev >= self._num_grippers) or self._shutdown_driver:
@@ -117,11 +117,6 @@ class Robotiq85Gripper(RobotiqGripperInterface):
         return self._gripper[dev].is_reset()
 
     def is_moving(self, dev=0):
-        if dev >= self._num_grippers:
-            return False
-        return self._gripper[dev].is_moving()
-
-    def is_stopped(self, dev=0):
         if dev >= self._num_grippers:
             return False
         return self._gripper[dev].is_moving()

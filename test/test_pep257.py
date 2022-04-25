@@ -14,10 +14,15 @@
 
 from ament_pep257.main import main
 import pytest
+import os
 
 
 @pytest.mark.linter
 @pytest.mark.pep257
 def test_pep257():
-    rc = main(argv=['.', 'test'])
+    if os.getcwd().endswith('sr2_arm'):
+        path = os.path.join(os.getcwd(), "sr2_arm")
+    else:
+        path = os.path.join(os.getcwd(), "src", "sr2_arm", "sr2_arm")
+    rc = main(argv=[path])
     assert rc == 0, 'Found code style errors / warnings'

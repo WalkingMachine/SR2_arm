@@ -1,4 +1,4 @@
-FROM etswalkingmachine/sr2-interfaces
+FROM etswalkingmachine/sr2_interfaces
 
 RUN mkdir -p ~/dev/src/sr2_arm
 

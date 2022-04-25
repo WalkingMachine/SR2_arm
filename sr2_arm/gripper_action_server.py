@@ -1,53 +1,56 @@
-# Copyright (c) 2022 Walking Machine
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""This module contains the Action server for the Gripper."""
 
-__author__ = "WalkingMachine"
+__author__ = "Walking Machine"
 __copyright__ = "Copyright (C) 2022 Walking Machine"
 __license__ = "MIT"
 __version__ = "1.0"
 
+import argparse
+from typing import Union
 from math import floor
+
 import rclpy
 from rclpy.action import ActionServer
 from rclpy.node import Node
 from sr2_interfaces.action import Gripper
 from sr2_interfaces.msg import Heartbeat
-from .robotiq_85.robotiq_85_gripper import Robotiq85Gripper
+
+from sr2_arm.robotiq_85.robotiq_test_gripper import RobotiqTestGripper
+from sr2_arm.robotiq_85.robotiq_85_gripper import Robotiq85Gripper
 
 
 class GripperActionServer(Node):
+    """
+    This Node is the server control for the gripper.
 
-    _POS_MIN = 0.0
-    _POS_MAX = 0.085
-    _VEL_MIN = 0.013
-    _VEL_MAX = 0.1
-    _FORCE_MIN = 5.0
-    _FORCE_MAX = 220.0
+    This node receives requests from the :class:`GripperActionClient`.
 
-    def __init__(self):
+    :param test_mode: Determines if the server is run in test mode, defaults to False
+    """
+
+    POS_MIN = 0.0
+    """The minimum position of the gripper."""
+    POS_MAX = 0.085
+    """The Maximum position of the gripper."""
+    VEL_MIN = 0.013
+    """The minimum velocity of the gripper."""
+    VEL_MAX = 0.1
+    """The Maximum velocity of the gripper."""
+    FORCE_MIN = 5.0
+    """The Minimum force that the grippers can apply."""
+    FORCE_MAX = 220.0
+    """The Maximum force that the grippers can apply."""
+
+    def __init__(self, test_mode=False) -> None:
         super().__init__('gripper_action_server')
-        self.gripper = Robotiq85Gripper(comport="/dev/gripper")
+        if test_mode:
+            self.gripper = RobotiqTestGripper()
+        else:
+            self.gripper = Robotiq85Gripper(comport="/dev/gripper")
         if not self.gripper.init_success:
             self.get_logger().error("Gripper not found")
             return
 
-        print(self.gripper.is_ready())
         # initialization of gripper
         self.gripper.process_act_cmd(0)
         self.gripper.process_stat_cmd(0)
@@ -59,31 +62,29 @@ class GripperActionServer(Node):
             self.execute_callback
         )
 
-        # teleop heartbeat
-        self.teleop_heartbeat_sub = self.create_subscription(
-            Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
-        self.teleop_heartbeat_timer = self.create_timer(
-            1, self.teleop_heartbeat_timer_callback)
+        if not test_mode:
+            # teleop heartbeat
+            self.teleop_heartbeat_sub = self.create_subscription(
+                Heartbeat, "sara/teleop/heartbeat", self.teleop_heartbeat_callback, 10)
+            self.teleop_heartbeat_timer = self.create_timer(
+                1, self.teleop_heartbeat_timer_callback)
 
         # flow control
         self.open_ = True
 
-    def _clip_values(self, value, min, max):
-        if min <= value <= max:
-            return value
-        elif value < min:
-            return min
-        elif value > max:
-            return max
+    def execute_callback(self, goal_handle) -> None:
+        """
+        Execute this method when the server receives a request.
 
-    def execute_callback(self, goal_handle):
+        :param goal_handle: This is the request sent to the server
+        """
         self.get_logger().info("executing goal")
         pos = self._clip_values(goal_handle.request.pos,
-                                self._POS_MIN, self._POS_MAX)
+                                self.POS_MIN, self.POS_MAX)
         vel = self._clip_values(goal_handle.request.vel,
-                                self._VEL_MIN, self._VEL_MAX)
+                                self.VEL_MIN, self.VEL_MAX)
         force = self._clip_values(
-            goal_handle.request.force, self._FORCE_MIN, self._FORCE_MAX)
+            goal_handle.request.force, self.FORCE_MIN, self.FORCE_MAX)
 
         self.gripper.goto(pos=pos, vel=vel, force=force)
         self.gripper.process_act_cmd(0)
@@ -108,19 +109,45 @@ class GripperActionServer(Node):
         result.obj_detected = self.gripper.object_detected()
         return result
 
-    def teleop_heartbeat_callback(self, msg):
+    def teleop_heartbeat_callback(self) -> None:
+        """
+        Handle heartbeat callback.
+
+        This method enables the flow of the gripper. If the flow stops,
+        the gripper will stop what it is doing.
+        """
         self.teleop_heartbeat_timer.reset()
         self.open_ = True
 
-    def teleop_heartbeat_timer_callback(self):
+    def teleop_heartbeat_timer_callback(self) -> None:
+        """Heartbeat timer closes dataflow if triggered."""
         self.open_ = False
         self.get_logger().error("No connection to Teleop...")
 
+    @staticmethod
+    def _clip_values(value, min_, max_) -> Union[int, float]:
+        if min_ <= value <= max_:
+            return value
+        if value < min_:
+            return min_
+        return max_
+
 
 def main(args=None):
-    rclpy.init(args=args)
+    """
+    Start Node using CLI.
 
-    node = GripperActionServer()
+    CLI - options:
+        :\--test: This starts the system using mock hardware.
+
+    :param args: rclpy arguments, defaults to None
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true")
+
+    rclpy.init(args=args)
+    args = parser.parse_args()
+    node = GripperActionServer(True if args.test else False)
 
     if node.gripper.init_success:
         rclpy.spin(node)
