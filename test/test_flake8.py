@@ -14,12 +14,18 @@
 
 from ament_flake8.main import main_with_errors
 import pytest
+import os
 
 
 @pytest.mark.flake8
 @pytest.mark.linter
 def test_flake8():
-    rc, errors = main_with_errors(argv=[])
+
+    if os.getcwd().endswith('sr2_arm'):
+        path = os.path.join(os.getcwd(), "sr2_arm")
+    else:
+        path = os.path.join(os.getcwd(), "src", "sr2_arm", "sr2_arm")
+    rc, errors = main_with_errors(argv=[path])
     assert rc == 0, \
         'Found %d code style errors / warnings:\n' % len(errors) + \
         '\n'.join(errors)

@@ -6,4 +6,3 @@ __pycache__/
 _build/
 _static/
 _templates/
-.pylintrc
