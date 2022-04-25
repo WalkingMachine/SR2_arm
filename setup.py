@@ -22,7 +22,9 @@ setup(
     entry_points={
         'console_scripts': [
             "start_gripper_server = sr2_arm.gripper_action_server:main",
-            "gripper_client = sr2_arm.gripper_action_client:main"
+            "gripper_client = sr2_arm.gripper_action_client:main",
+            "start_kinova = sr2_arm.kinova_control:main",
+            "start_arm_control = sr2_arm.arm_control:main"
         ],
     },
 )

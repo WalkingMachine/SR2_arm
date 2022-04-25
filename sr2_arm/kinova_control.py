@@ -38,7 +38,7 @@ class Kinova_Control(Node):
 
     def joint_change_callback(self, msg: JointChange):
         if self.open_:
-            if msg.SET:
+            if msg.set:
                 if 0 <= msg.set_index <= 4:
                     self.driver.set_joint(msg.set_index)
                 else:
@@ -53,7 +53,7 @@ class Kinova_Control(Node):
 
     def joint_move_callback(self, msg: MoveJoint):
         if self.open_:
-            self.driver.send_cmd_val(msg.direction * msg.speed)
+            self.driver.send_cmd_val(float(msg.speed))
         else:
             self.driver.send_estop()
 
