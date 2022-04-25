@@ -1,7 +1,8 @@
 from setuptools import setup
 
 package_name = 'sr2_arm'
-robotiq_85 = 'sr2_arm/robotiq_85'
+robotiq_pkg = 'sr2_arm/robotiq_85'
+kinova_pkg = 'sr2_arm/kinova' 
 
 setup(
     name=package_name,
