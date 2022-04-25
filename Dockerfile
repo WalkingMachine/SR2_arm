@@ -1,10 +1,10 @@
-FROM etswalkingmachine/ros2-base:latest
+FROM etswalkingmachine/sr2_interfaces
 
 RUN mkdir -p ~/dev/src/sr2_arm
 
-COPY . /root/dev/src/
+COPY . /root/dev/src/sr2_arm
 
-RUN bash -c python3 -m pip install -r src/sr2_arm/requirements.txt
+RUN pip install -r /root/dev/src/sr2_arm/requirements.txt
 
 RUN rosdep install -i --from-path src --rosdistro foxy -y
 
