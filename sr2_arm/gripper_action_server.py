@@ -30,14 +30,19 @@ class GripperActionServer(Node):
 
     POS_MIN = 0.0
     """The minimum position of the gripper."""
+
     POS_MAX = 0.085
     """The Maximum position of the gripper."""
+
     VEL_MIN = 0.013
     """The minimum velocity of the gripper."""
+
     VEL_MAX = 0.1
     """The Maximum velocity of the gripper."""
+
     FORCE_MIN = 5.0
     """The Minimum force that the grippers can apply."""
+    
     FORCE_MAX = 220.0
     """The Maximum force that the grippers can apply."""
 
